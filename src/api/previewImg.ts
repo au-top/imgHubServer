@@ -49,7 +49,7 @@ async function apiReadMinImgFileContent(fileName: string) {
             const s=bufferToStream(imageCoverBuffer)
             s.pipe(
                 fs.createWriteStream(`${previewImgPath}/${fileName}`)
-            );
+            ).on('close',res);
         });
     }
 }
