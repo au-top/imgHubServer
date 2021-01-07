@@ -1,5 +1,6 @@
 import { httpGetAllImgName, apiReadFileContent } from "~/api/showImg";
-import { imgSourcePath, publicPath } from "./config";
+import { uploadImage ,saveManage as uploadImgSaveManage } from "~/api/uploadImg";
+import { imgSourcePath, publicPath, previewImgPath } from "./config";
 import { httpGetMinImgFile } from "~/api/previewImg";
 import express from "express";
 export function setupRouter(app: express.Express) {
@@ -17,10 +18,26 @@ export function setupRouter(app: express.Express) {
     //static
     app.use("/imgSource", express.static(`${imgSourcePath}`));
     app.use("/public", express.static(`${publicPath}`));
+
     const api = express();
-    //api
     app.use("/api", api);
+    //api
+    api.use((req, res, next) => {
+        console.log(req.originalUrl);
+        next();
+    });
     api.get("/imgList/:indexPage/:count", httpGetAllImgName);
     api.get("/previewImg/:imgPath", httpGetMinImgFile);
-    api.get("/getList");
+    //recvFileApiObj
+
+    const recvApi = express();
+    // /api/recv
+    api.use("/recv", recvApi);
+    //recv
+    // /api/recv/upload/img
+    recvApi.post(
+        "/upload/img",
+        uploadImgSaveManage,
+        uploadImage
+    );
 }
